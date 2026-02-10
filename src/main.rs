@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
-use jcamp_rs::{parse_paravision_params, PvAtom, PvValue};
+use bruker_jcamp_rs::{parse_paravision_params, PvAtom, PvValue};
 
 fn main() {
 
