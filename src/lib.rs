@@ -12,6 +12,16 @@ pub enum PvValue {
 }
 
 impl PvValue {
+
+
+    pub fn to_usize(&self) -> Option<usize> {
+        match self {
+            PvValue::Scalar(value) => Some(value.clone().into()),
+            PvValue::Array { .. } => None,
+            PvValue::Str(_) => None,
+        }
+    }
+
     pub fn to_vec_usize(&self) -> Option<Vec<usize>> {
         match self {
             PvValue::Scalar(atom) => Some(vec![atom.clone().into()]),
