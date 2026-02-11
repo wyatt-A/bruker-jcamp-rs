@@ -11,6 +11,19 @@ pub enum PvValue {
     Str(String), // for <...> style strings (we keep as String)
 }
 
+impl Display for PvValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PvValue::Scalar(x) => write!(f, "{x}"),
+            PvValue::Array{items,..} => {
+                let s = items.iter().map(|x| x.to_string()).collect::<Vec<String>>().join(",");
+                write!(f, "[{s}]")
+            }
+            PvValue::Str(x) => write!(f, "{x}"),
+        }
+    }
+}
+
 impl PvValue {
 
 
@@ -65,6 +78,17 @@ pub enum PvAtom {
     Text(String), // fallback (e.g., ParallelExperiment)
 }
 
+impl Display for PvAtom {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PvAtom::Bool(value) => write!(f, "{}", value),
+            PvAtom::Int(value) => write!(f, "{}", value),
+            PvAtom::Float(value) => write!(f, "{}", value),
+            PvAtom::Text(value) => write!(f, "{}", value),
+        }
+    }
+}
+
 impl From<PvAtom> for f64 {
     fn from(val: PvAtom) -> Self {
         match val  {
@@ -111,6 +135,7 @@ impl From<PvAtom> for bool {
 }
 
 use std::collections::HashMap;
+use std::fmt::Display;
 use std::io::{self, BufRead, BufReader};
 
 #[derive(Debug)]
