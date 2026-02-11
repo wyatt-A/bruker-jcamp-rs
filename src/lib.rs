@@ -11,6 +11,42 @@ pub enum PvValue {
     Str(String), // for <...> style strings (we keep as String)
 }
 
+impl PvValue {
+    pub fn to_vec_usize(&self) -> Option<Vec<usize>> {
+        match self {
+            PvValue::Scalar(atom) => Some(vec![atom.clone().into()]),
+            PvValue::Array { items, .. } => Some(items.iter().cloned().map(|i| i.into()).collect()),
+            PvValue::Str(_) => None
+        }
+    }
+
+    pub fn to_vec_f64(&self) -> Option<Vec<f64>> {
+        match self {
+            PvValue::Scalar(atom) => Some(vec![atom.clone().into()]),
+            PvValue::Array { items, .. } => Some(items.iter().cloned().map(|i| i.into()).collect()),
+            PvValue::Str(_) => None
+        }
+    }
+
+    pub fn to_vec_bool(&self) -> Option<Vec<bool>> {
+        match self {
+            PvValue::Scalar(atom) => Some(vec![atom.clone().into()]),
+            PvValue::Array { items, .. } => Some(items.iter().cloned().map(|i| i.into()).collect()),
+            PvValue::Str(_) => None
+        }
+    }
+
+    pub fn to_vec_i64(&self) -> Option<Vec<i64>> {
+        match self {
+            PvValue::Scalar(atom) => Some(vec![atom.clone().into()]),
+            PvValue::Array { items, .. } => Some(items.iter().cloned().map(|i| i.into()).collect()),
+            PvValue::Str(_) => None
+        }
+    }
+
+}
+
+
 #[derive(Debug, Clone)]
 pub enum PvAtom {
     Bool(bool),   // Yes/No/True/False
@@ -37,6 +73,17 @@ impl From<PvAtom> for usize {
             PvAtom::Bool(b) => {if b {1} else {0}},
             PvAtom::Int(i) => {i as usize},
             PvAtom::Float(f) => {f as usize},
+            PvAtom::Text(s) => s.parse().expect("cannot parse string as usize"),
+        }
+    }
+}
+
+impl From<PvAtom> for i64 {
+    fn from(val: PvAtom) -> i64 {
+        match val {
+            PvAtom::Bool(b) => {if b {1} else {0}},
+            PvAtom::Int(i) => {i},
+            PvAtom::Float(f) => {f as i64},
             PvAtom::Text(s) => s.parse().expect("cannot parse string as usize"),
         }
     }
