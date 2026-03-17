@@ -4,6 +4,36 @@ pub struct PvParams {
     pub params: HashMap<String, PvValue>, // everything under ##$...
 }
 
+impl PvParams {
+    /// returns the acq size parameter
+    pub fn acq_size(&self) -> Result<Vec<usize>,PvError> {
+        let param = "ACQ_size";
+        if let PvValue::Array {items,..} = self.params.get(param)
+            .ok_or(PvError::FailedToGetParam(param.to_string()))? {
+            let dims:Vec<usize> = items.iter().cloned().map(|a|a.into()).collect();
+            return Ok(dims)
+        }
+        Err(PvError::UnexpectedParamType(param.to_string()))
+    }
+
+    /// returns the number of coils
+    pub fn n_coils(&self) -> Result<usize,PvError> {
+        let param = "ACQ_ReceiverSelect";
+        if let PvValue::Array{items,..} = self.params.get(param)
+            .ok_or(PvError::FailedToGetParam(param.to_string()))? {
+            let n_coils = items.iter()
+                .filter(|v| matches!(v, PvAtom::Bool(true)))
+                .count();
+            return Ok(n_coils)
+        }
+        Err(PvError::UnexpectedParamType(param.to_string()))
+    }
+
+}
+
+
+
+
 #[derive(Debug, Clone)]
 pub enum PvValue {
     Scalar(PvAtom),
@@ -145,6 +175,8 @@ use serde::{Deserialize, Serialize};
 pub enum PvError {
     Io(String),
     Parse(String),
+    FailedToGetParam(String),
+    UnexpectedParamType(String),
 }
 
 impl From<io::Error> for PvError {
