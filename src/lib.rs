@@ -137,15 +137,16 @@ impl From<PvAtom> for bool {
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::io::{self, BufRead, BufReader};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug,Serialize,Deserialize)]
 pub enum PvError {
-    Io(io::Error),
+    Io(String),
     Parse(String),
 }
 
 impl From<io::Error> for PvError {
-    fn from(e: io::Error) -> Self { PvError::Io(e) }
+    fn from(e: io::Error) -> Self { PvError::Io(e.to_string()) }
 }
 
 #[derive(Debug)]
