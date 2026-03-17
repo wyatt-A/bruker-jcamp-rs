@@ -136,7 +136,9 @@ impl From<PvAtom> for bool {
 
 use std::collections::HashMap;
 use std::fmt::Display;
+use std::fs::File;
 use std::io::{self, BufRead, BufReader};
+use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug,Serialize,Deserialize)]
@@ -159,7 +161,11 @@ enum Pending {
 }
 
 
-pub fn parse_paravision_params<R: BufRead>(mut reader: R) -> Result<PvParams, PvError> {
+pub fn parse_paravision_params(jcamp_file:impl AsRef<Path>) -> Result<PvParams, PvError> {
+
+    let f = File::open(jcamp_file)?;
+    let mut reader = BufReader::new(f);
+
     let mut out = PvParams { meta: HashMap::new(), params: HashMap::new() };
 
     let mut pending: Option<Pending> = None;

@@ -5,8 +5,7 @@ use bruker_jcamp_rs::{parse_paravision_params, PvAtom, PvValue};
 
 fn main() {
 
-    let f = File::open("/Users/wyatt/20260209_143522_B26020901_25_abb_12_1_1/8/acqp").unwrap();
-    let pv = parse_paravision_params(BufReader::new(f)).unwrap();
+    let pv = parse_paravision_params("/Users/wyatt/20260209_143522_B26020901_25_abb_12_1_1/8/acqp").unwrap();
 
     let (n_read,n_proj):(usize,usize) = if let PvValue::Array {items,..} = pv.params.get("ACQ_size").unwrap() {
         (items[0].clone().into(),items[1].clone().into())
