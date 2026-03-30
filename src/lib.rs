@@ -5,6 +5,35 @@ pub struct PvParams {
 }
 
 impl PvParams {
+
+    /// convert params to headfile-formatted ordered hashmap
+    pub fn to_hash(&self) -> IndexMap<String, String> {
+        let mut h = Headfile::new();
+        for (k, v) in self.meta.iter() {
+            h.insert_scalar(k,v,false);
+        }
+        for (k, v) in &self.params {
+            match v {
+                PvValue::Scalar(x) => {
+                    h.insert_scalar(k,x,false);
+                },
+                PvValue::Array {dims, items } => {
+                    if dims.len() == 1 {
+                        h.insert_list_1d(k,items,false);
+                    }
+                    if dims.len() == 2 {
+                        h.insert_list_2d(k,dims[0],dims[1],items,false);
+                    }
+                }
+                PvValue::Str(x) => {
+                    h.insert_scalar(k,x,false);
+                }
+            }
+
+        }
+        h.entries()
+    }
+
     /// returns the acq size parameter
     pub fn acq_size(&self) -> Result<Vec<usize>,PvError> {
         let param = "ACQ_size";
@@ -32,8 +61,6 @@ impl PvParams {
 }
 
 
-
-
 #[derive(Debug, Clone)]
 pub enum PvValue {
     Scalar(PvAtom),
@@ -55,7 +82,6 @@ impl Display for PvValue {
 }
 
 impl PvValue {
-
 
     pub fn to_usize(&self) -> Option<usize> {
         match self {
@@ -169,6 +195,8 @@ use std::fmt::Display;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 use std::path::Path;
+use headfile::Headfile;
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug,Serialize,Deserialize)]
